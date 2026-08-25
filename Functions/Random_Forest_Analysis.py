@@ -5,8 +5,6 @@ Created on Thu Aug 13 14:12:56 2026
 @author: Edwin
 """
 from load_human_metabolites import load_human_metabolites
-from import_Ethan_livers import import_Ethan_livers
-from load_Ethan_gonads import load_Ethan_gonads
 from Plot_Model_Results import Plot_Model_Results
 
 from sklearn.model_selection import train_test_split, StratifiedKFold, permutation_test_score, RandomizedSearchCV
