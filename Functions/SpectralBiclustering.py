@@ -22,7 +22,7 @@ import seaborn as sb
 from scipy import stats
 from scipy.cluster.hierarchy import fcluster
 
-from import_Ethan_livers import import_Ethan_livers
+from load_human_metabolites import load_human_metabolites
 
 # Source - https://stackoverflow.com/a/14463362
 # Posted by Mike, modified by community. See post 'Timeline' for change history
