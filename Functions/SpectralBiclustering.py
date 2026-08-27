@@ -45,7 +45,7 @@ class Spectral_Biclustering:
     used are often quite small, conclusions can only be drawn very weakly. It is hypothesis-generating not hypothesis-
     confirming.
     """
-    def __init__(self, data_func, data_frame = False):
+    def __init__(self, data_func, data_frame = False, random_state = 42):
         """
         Takes a function that loads the data for the clustering. If data_frame = True, assumes that the data is returned as
         a data frame with the groups in a seperate column called group.
@@ -71,6 +71,7 @@ class Spectral_Biclustering:
         self.x = x
         self.x_numeric = x_numeric
         self.y = y
+        self.random_state = random_state
     
     def perform_cluster(self, n_row_clusters = 6, n_col_clusters = 9):
         """
@@ -103,7 +104,7 @@ class Spectral_Biclustering:
         model = SpectralBiclustering(
             n_clusters=(self.n_row_clusters, self.n_col_clusters),
             method='log',        # 'log' works well for count/intensity-like data; 'bistochastic' is the alternative
-            random_state=42
+            random_state=self.random_state
             )
         model.fit(X_scaled)
 
@@ -357,7 +358,7 @@ class Spectral_Biclustering:
         col_scores = []
         col_range = range(2, 20)
         for k in col_range:
-            m = SpectralBiclustering(n_clusters=(self.n_row_clusters, k), method='log', random_state=42)
+            m = SpectralBiclustering(n_clusters=(self.n_row_clusters, k), method='log', random_state=self.random_state)
             m.fit(self.X_scaled)
             # silhouette needs the data transposed so columns become "samples" for this metric
             score = silhouette_score(self.X_scaled.T, m.column_labels_)
@@ -371,7 +372,7 @@ class Spectral_Biclustering:
         row_scores = []
         row_range = range(2, 20)
         for a in row_range:
-            n = SpectralBiclustering(n_clusters=(a, self.n_col_clusters), method='log', random_state=42)
+            n = SpectralBiclustering(n_clusters=(a, self.n_col_clusters), method='log', random_state=self.random_state)
             n.fit(self.X_scaled)
             # silhouette needs the data transposed so columns become "samples" for this metric
             score = silhouette_score(self.X_scaled, n.row_labels_)
@@ -475,7 +476,7 @@ class Spectral_Biclustering:
         col_scores = []
         for k in col_range:
             m = SpectralBiclustering(n_clusters=(self.n_row_clusters, k),
-                                     method='log', random_state=42)
+                                     method='log', random_state=self.random_state)
             m.fit(self.X_scaled)
             score = self._msr_for_labels(m.row_labels_, m.column_labels_,
                                          self.n_row_clusters, k)
@@ -488,7 +489,7 @@ class Spectral_Biclustering:
         row_scores = []
         for k in row_range:
             m = SpectralBiclustering(n_clusters=(k, self.n_col_clusters),
-                                     method='log', random_state=42)
+                                     method='log', random_state=self.random_state)
             m.fit(self.X_scaled)
             score = self._msr_for_labels(m.row_labels_, m.column_labels_,
                                       k, self.n_col_clusters)
@@ -677,5 +678,5 @@ class Spectral_Biclustering:
                 self.compare_msr
 
 if __name__ == "__main__":
-    SB = Spectral_Biclustering(data_func = import_Ethan_livers, data_frame = False)
+    SB = Spectral_Biclustering(data_func = load_human_metabolites, data_frame = True, )
     SB.run_everything()
