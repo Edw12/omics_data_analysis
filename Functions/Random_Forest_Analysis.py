@@ -591,7 +591,7 @@ if __name__ == "__main__":
     
     plt.close("all")
     
-    analysis = Random_Forest_Analysis(load_Ethan_gonads, data_frame = False, random_state=42)
+    analysis = Random_Forest_Analysis(load_human_metabolites, data_frame = True, random_state=42)
     
     collected, best_vals = analysis.tune_hyperparams(out = True, n_seeds = 3)
     
@@ -603,17 +603,7 @@ if __name__ == "__main__":
     analysis.find_important(use_val = False)
     analysis.MI_matrix()
     
-    #analysis.partial_dependance_plots(target = "AdSKO-WT", n = 6, pri_pairs=True)
-    #analysis.partial_dependance_plots(target = "AdSKO-eGFP", n = 6, pri_pairs=True)
-    #analysis.partial_dependance_plots(target = "AdSKO-hB2", n = 6, pri_pairs=True)
-    #analysis.partial_dependance_plots(target = "SKO-Lira", n = 6, pri_pairs=True)
-    #analysis.partial_dependance_plots(target = "SKO-WT", n = 6, pri_pairs=True)
-    #analysis.partial_dependance_plots(target = "SKO-PBS", n = 6, pri_pairs=True)
-    #analysis.partial_dependance_plots(target = "Diabetic_Female", n = 4, pri_pairs = True)
-    #analysis.partial_dependance_plots(target = "Diabetic_Male", n = 4, pri_pairs = True)
-    #analysis.partial_dependance_plots(target = "Control_Female", n = 4, pri_pairs = True)
-    #analysis.partial_dependance_plots(target = "Control_Male", n = 4, pri_pairs = True)
-    analysis.partial_dependance_plots(target = "CTRL", n = 4, pri_pairs = True)
-    analysis.partial_dependance_plots(target = "hB2", n = 4, pri_pairs = True)
-    analysis.partial_dependance_plots(target = "eGFP", n = 4, pri_pairs = True)
-    analysis.partial_dependance_plots(target = "dNT", n = 4, pri_pairs = True)
+    analysis.partial_dependance_plots(target = "Diabetic_Female", n = 4, pri_pairs = True)
+    analysis.partial_dependance_plots(target = "Diabetic_Male", n = 4, pri_pairs = True)
+    analysis.partial_dependance_plots(target = "Control_Female", n = 4, pri_pairs = True)
+    analysis.partial_dependance_plots(target = "Control_Male", n = 4, pri_pairs = True)
