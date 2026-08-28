@@ -584,7 +584,7 @@ class Spectral_Biclustering:
     def run_everything(self, params = None):
         """
         A simple function to run the whole code. It is recommended to create your own pipeline with the
-        methods you want to use.
+        methods you want to use, letting you set all of the parameters.
 
         Parameters
         ----------
