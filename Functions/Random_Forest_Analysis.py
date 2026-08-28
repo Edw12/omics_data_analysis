@@ -37,7 +37,7 @@ class Random_Forest_Analysis:
         data_func : function
             Function that loads the data as described above.
         data_frame : bool, optional
-            If the function returns a df, = True, otherwise = False. The default is False.
+            If the function returns a df containing all information = True, otherwise = False. The default is False.
 
         Returns
         -------
@@ -101,18 +101,18 @@ class Random_Forest_Analysis:
                 'max_features': "log2",  # How many features considered per split
                 'ccp_alpha': 0.01  # Prunes branches that are overly complicated (more complicated without improving validation)
                 }
-        
-        n_per_class = []  # Number of splits cannot be greater than the number of members in each class
+        # No. of splits can't be > than no. of members of smallest class, issue for small datasets
+        n_per_class = [] 
         name_class = []
         for a in np.unique(self.y_train):
             no = np.sum(self.y_train == a)
             n_per_class.append(no)
             name_class.append(a)
         index = np.argmin(np.array(n_per_class))
-        n_splits = n_per_class[index]
-        if n_splits > 5:
+        n_splits = n_per_class[index]  # If no. members in smallest class is < 5, sets number of splits to this
+        if n_splits > 5:  # n_splits > 5 can be excessive
             n_splits = 5
-        if n_splits == 1:
+        if n_splits == 1:  # can't have a number of splits less than 2
             n_splits = 2
         print(f"The number of splits was {n_splits}, the smallest class was {name_class[index]}")
         self.n_splits = n_splits
@@ -155,7 +155,7 @@ class Random_Forest_Analysis:
             the grid that it selects. Higher numbers take longer, check more options, but are often unnecissary.
             The default is 100.
         param_grid : dictionary, optional
-            Dictionary of hyperparameters to try for RandomizedSearchCV. There is a default dict for None. The default is None.
+            Dictionary of hyperparameters to try for RandomizedSearchCV. There is a default dict if left as None. The default is None.
         runtime : bool, optional
             Prints runtime length. The default is True.
         out : bool, optional
@@ -197,10 +197,10 @@ class Random_Forest_Analysis:
                     numeric_values = [float(v) for v in values]
                     avg = sum(numeric_values) / len(numeric_values)
                     all_int = all(isinstance(v, numbers.Integral) for v in values)  # Checks whether all of the values are integers
-                    if all_int == True:
-                        best_vals[key] = round(avg)
+                    if all_int == True:    
+                        best_vals[key] = round(avg)  # Rounds to usable integer
                     else:
-                        best_vals[key] = avg
+                        best_vals[key] = avg  # Keeps as true float value
                     print(f"  {key} : {avg:.4g}  (numeric mean, from {values})")
                 except (TypeError, ValueError):
                     # Fall back to categorical: count occurrences as strings
@@ -217,10 +217,11 @@ class Random_Forest_Analysis:
             return collected, best_vals
         
         random_gen = np.random.default_rng(seed = self.random_state)
-        random_states = random_gen.integers(low = 0, high = 100, size = n_seeds)
+        random_states = random_gen.integers(low = 0, high = 100, size = n_seeds)  # Set of random seeds for testing
         res = []
         params_best = []
         for i in random_states:
+            # Use RandomizedSearchCV rather than GridSearchCV for lighter computation
                 t1 = time.time()
                 X_train, self.X_test, y_train, self.y_test = train_test_split(
                     self.x, self.y,
@@ -255,7 +256,7 @@ class Random_Forest_Analysis:
                     )
 
                 if param_grid == None:  # fine tune the parameters to avoid overfitting
-                    param_grid = {
+                    param_grid = {  # Sample grid
                         'n_estimators' : [100, 200, 300, 400],
                         'max_depth': [3, 5, 7, 10],
                         'min_samples_leaf': [1, 2, 5, 10, 20],  
@@ -391,10 +392,15 @@ class Random_Forest_Analysis:
         marker_map = build_marker_map(labels, markers = markers)
         Plot_Model_Results(X_test = self.X_test, y_test = self.y_test, y_pred = self.y_pred, 
                            colour_map = colour_map, marker_map = marker_map)
+        
     def find_important(self, pri = True, out = False, scoring = "roc_auc_ovr", use_val = True, runtime = True):
         """
         Finds the important columns and prints them. If there are no significant features in the top 30, the
-        partial dependance plots will not be plot properly.
+        partial dependance plots will not be plotted properly.
+
+        For smaller datasets, the scoring algorithm can struggle to find significant variables, so other scorers 
+        may want to be tried. It was found, for a small dataset that ROC AUC one vs rest, balanced_accuracy, f1_macro, 
+        f1_weighted and matthews_corrcoef had limited success.
         
         Parameters
         ----------
@@ -402,7 +408,7 @@ class Random_Forest_Analysis:
             If True, prints the number of significant metabolites in the total dataset and the top 30 
             most important. The default = True
         out : bool, optional
-            If true, returns the 30 most important metabolites.
+            If true, returns the 30 most important metabolites. The default is False.
         scoring : string, optional
             Passed to the permutation importance, to score the importance. Only use multiclass scorers. Default is roc_auc_ovr
         use_val : bool optional
@@ -414,7 +420,8 @@ class Random_Forest_Analysis:
             The most important metabolites
         """
         # A more useful measure of importance for highly correlated data, like metabolomics
-        # "involves randomly shuffling the values of a single feature and observing the resulting degradation of the model’s score" -- https://scikit-learn.org/stable/modules/permutation_importance.html
+        # "involves randomly shuffling the values of a single feature and observing the resulting degradation of the model’s score" 
+        # -- https://scikit-learn.org/stable/modules/permutation_importance.html
         
         t1 = time.time()
         
@@ -428,7 +435,7 @@ class Random_Forest_Analysis:
         perm = permutation_importance(
             self.classifier, X = x, y = y,
             n_repeats=20, random_state= self.random_state, n_jobs=3, scoring = scoring)
-        # ROC AUC one vs rest didn't pass significance tests, balanced_accuracy, f1_macro, f1_weighted and matthews_corrcoef had all 0s
+    
         
         importance_df = pd.DataFrame({
         "importance_mean": perm.importances_mean,
