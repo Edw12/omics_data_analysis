@@ -620,7 +620,7 @@ class Spectral_Biclustering:
                 cmap, vmin, vmax, figsize = params[1]
                 self.plot_biclusters(cmap, vmin, vmax, figsize)
             except:
-                self.plot_bicluster()
+                self.plot_biclusters()
         print("\nReturns the clusters of the metabolite groups.")
         next_step = input("\nWould you like to run? y/n")
         
@@ -676,7 +676,7 @@ class Spectral_Biclustering:
                 row_range, col_range = params[5]
                 self.compare_msr(row_range, col_range)
             except:
-                self.compare_msr
+                self.compare_msr()
 
 if __name__ == "__main__":
     SB = Spectral_Biclustering(data_func = load_human_metabolites, data_frame = True, )
