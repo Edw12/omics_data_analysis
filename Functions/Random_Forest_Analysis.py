@@ -222,6 +222,7 @@ class Random_Forest_Analysis:
         random_states = random_gen.integers(low = 0, high = 100, size = n_seeds)  # Set of random seeds for testing
         res = []
         params_best = []
+        j = 0  # Keep track of how many random states have been used
         for i in random_states:
             # Use RandomizedSearchCV rather than GridSearchCV for lighter computation
                 t1 = time.time()
@@ -286,8 +287,8 @@ class Random_Forest_Analysis:
                 self.y_pred = self.classifier.predict(self.X_test)
         
                 if runtime == True:
-                    print(f"{np.where(random_states == i)[0]}: Random state {i} took {time.time()-t1:.3f}s to run.")
-            
+                    print(f"{j}: Random state {i} took {time.time()-t1:.3f}s to run.")
+                    j += 1
                 res.append([i, np.sum(self.y_pred==self.y_test), len(self.y_test)])
                 params_best.append(random_search.best_params_)
         for a in res:
