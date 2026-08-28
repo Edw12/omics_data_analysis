@@ -596,19 +596,17 @@ class Random_Forest_Analysis:
     def run_everything(self, params = None):
         """
         A simple function to run the whole code. It is recommended to create your own pipeline with the
-        methods you want to use.
+        methods you want to use, which allows easier parameter setting.
 
         Parameters
         ----------
         params : list, optional
             A list of lists, containing the parameters to be used. If used, there must be
-            6 contained lists. 
-            params[0] = [n_row_clusters, n_col_clusters] for use in perform_cluster
-            params[1] = [cmap, vmin, vmax, figsize] for use in plot_biclusters
-            params[2] = [show, output] for use in cluster_groupings
-            params[3] = [n_clusters_visual, show, output] for use in heatmap_groupings
-            params[4] = [group_a, group_b] for use in stats_tests
-            params[5] = [row_range, col_range] for use in compare_msr
+            4 contained lists. 
+            params[0] = [out, n_seeds, param_grid, n_iter, test_size, val_size] for use in tuning hyperparameters
+            params[1] = [best_vals, out, test_size, val_size] for use in generate classifier. Still must be present if using tuning hyperparameters
+            params[2] = [CM, bal_acc_sco, per_tes_sco, n_permutations] for use in clasifier_scores
+            params[3] = [target, n, pri_pairs] for use in partial_dependence_plots
             For the requirements for the parameters in the lists, refer to the method text.
             The default is None.
 
@@ -657,7 +655,6 @@ class Random_Forest_Analysis:
         
         if next_step == "y":
             try:
-                n_clusters_visual, show, output = params[3]
                 self.find_important(use_val = False)
                 self.MI_matrix()
             except:
@@ -669,10 +666,10 @@ class Random_Forest_Analysis:
         
         if next_step == "y":
             try:
-                target, n, pri_pairs = params[5]
-                    self.partial_dependance_plots(target = target, n = n, pri_pairs = pri_pairs)
+                target, n, pri_pairs = params[3]
+                self.partial_dependance_plots(target = target, n = n, pri_pairs = pri_pairs)
             except:
-                    self.partial_dependance_plots()
+                self.partial_dependance_plots()
 
 if __name__ == "__main__":
     
