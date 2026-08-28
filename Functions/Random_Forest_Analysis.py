@@ -133,12 +133,14 @@ class Random_Forest_Analysis:
             return np.sum(self.y_pred==self.y_test), len(self.y_test)
     
     def tune_hyperparams(self, test_size = 0.3, val_size = 0.3, 
-                         n_seeds = 10, n_iter = 100,
+                         n_seeds = 3, n_iter = 100,
                          param_grid = None, runtime = True, out = False):
         """
         Performs a RandomizedSearchCV using different hyperparameters and random states to find the best
         parameters for building the classifier. Prints the average best results for use. The test_size, val_size
         should be kept the same as for generate_classifier for most useful results.
+        This is computationally expensive and takes a long time to run, so it best used once to get the parameters
+        and then not again.
 
         Parameters
         ----------
@@ -148,8 +150,8 @@ class Random_Forest_Analysis:
             Second split. The default is 0.3.
         n_seeds : int, optional
             The number of different seeds to be used when testing the best hyperparameters. Having a high
-            number of seeds and lots of tuning parameters can be computationally expensive and often unnecissary.
-            The default is 10.
+            number of seeds and lots of tuning parameters can be computationally expensive and often unnecissary,
+            however, 3 is too low to get a good idea. 10 is more appropriate. The default is 3.
         n_iter : int, optional
             The number of iterations of the RandomizedSearchCV, this is the number of parameter combinations on
             the grid that it selects. Higher numbers take longer, check more options, but are often unnecissary.
