@@ -619,7 +619,7 @@ class Random_Forest_Analysis:
         if next_step == "y":
             try: 
                 out, n_seeds, param_grid, n_iter, test_size, val_size = params[0]
-                collected, best_vals = self.tune_hyperparams(out = out, n_seeds = n_seeds, param_grid = param_grid, n_iter = n_iter, test_size = test_size, val_size = val_size)
+                collected, best_vals = self.tune_hyperparams(n_seeds = n_seeds, param_grid = param_grid, n_iter = n_iter, test_size = test_size, val_size = val_size)
                 self.generate_classifier(parameters = best_vals, out = out, test_size = test_size, val_size = val_size)
             except:
                 collected, best_vals = self.tune_hyperparams()
