@@ -593,6 +593,86 @@ class Random_Forest_Analysis:
         if ret_pairs == True:
             return (pairs)
 
+    def run_everything(self, params = None):
+        """
+        A simple function to run the whole code. It is recommended to create your own pipeline with the
+        methods you want to use.
+
+        Parameters
+        ----------
+        params : list, optional
+            A list of lists, containing the parameters to be used. If used, there must be
+            6 contained lists. 
+            params[0] = [n_row_clusters, n_col_clusters] for use in perform_cluster
+            params[1] = [cmap, vmin, vmax, figsize] for use in plot_biclusters
+            params[2] = [show, output] for use in cluster_groupings
+            params[3] = [n_clusters_visual, show, output] for use in heatmap_groupings
+            params[4] = [group_a, group_b] for use in stats_tests
+            params[5] = [row_range, col_range] for use in compare_msr
+            For the requirements for the parameters in the lists, refer to the method text.
+            The default is None.
+
+        Returns
+        -------
+        None
+        """
+        print("Tune the hyperparameters.")
+        next_step = input("\nWould you like to run? y/n")
+        if next_step == "y":
+            try: 
+                out, n_seeds, param_grid, n_iter, test_size, val_size = params[0]
+                collected, best_vals = self.tune_hyperparams(out = out, n_seeds = n_seeds, param_grid = param_grid, n_iter = n_iter, test_size = test_size, val_size = val_size)
+                self.generate_classifier(parameters = best_vals, out = out, test_size = test_size, val_size = val_size)
+            except:
+                collected, best_vals = self.tune_hyperparams()
+                self.generate_classifier(parameters = best_vals, out = True)
+        
+        print("\nIf hyperparameters were not tuned, generate the classifier.")
+        next_step = input("\nWould you like to run? y/n")
+        
+        if next_step == "y":        
+            try: 
+                best_vals, out, test_size, val_size = params[1]
+                self.generate_classifier(parameters = best_vals, out = out, test_size = test_size, val_size = val_size)
+            except:
+                self.generate_classifier()
+                
+        print("\nScore the success of the classifier.")
+        next_step = input("\nWould you like to run? y/n")
+        
+        if next_step == "y":
+            try: 
+                CM, bal_acc_sco, per_tes_sco, n_permutations = params[2]
+                self.classifier_scores(CM = CM, bal_acc_sco = bal_acc_sco, per_tes_sco = per_tes_sco, n_permutations = n_permutations)
+            except:
+                self.classifier_scores()
+                
+        print("\nPlot the results of the classifier.")
+        next_step = input("\nWould you like to run? y/n")
+        
+        if next_step == "y":
+                self.Plot_Results()
+        print("\nFind the important features and create a Mutual Information matrix.")
+        next_step = input("\nWould you like to run? y/n")
+        
+        if next_step == "y":
+            try:
+                n_clusters_visual, show, output = params[3]
+                self.find_important(use_val = False)
+                self.MI_matrix()
+            except:
+                self.find_important(use_val = False)
+                self.MI_matrix()
+
+        print("\nCreates Partial Dependence Plots for high pair importance features.")
+        next_step = input("\nWould you like to run? y/n")
+        
+        if next_step == "y":
+            try:
+                target, n, pri_pairs = params[5]
+                    self.partial_dependance_plots(target = target, n = n, pri_pairs = pri_pairs)
+            except:
+                    self.partial_dependance_plots()
 
 if __name__ == "__main__":
     
@@ -600,17 +680,4 @@ if __name__ == "__main__":
     
     analysis = Random_Forest_Analysis(load_human_metabolites, data_frame = True, random_state=42)
     
-    collected, best_vals = analysis.tune_hyperparams(out = True, n_seeds = 3)
-    
-    analysis.generate_classifier(parameters = best_vals, out = True)
-    
-    analysis.classifier_scores()
-    analysis.Plot_Results()
-
-    analysis.find_important(use_val = False)
-    analysis.MI_matrix()
-    
-    analysis.partial_dependance_plots(target = "Diabetic_Female", n = 4, pri_pairs = True)
-    analysis.partial_dependance_plots(target = "Diabetic_Male", n = 4, pri_pairs = True)
-    analysis.partial_dependance_plots(target = "Control_Female", n = 4, pri_pairs = True)
-    analysis.partial_dependance_plots(target = "Control_Male", n = 4, pri_pairs = True)
+    analysis.run_everything()
