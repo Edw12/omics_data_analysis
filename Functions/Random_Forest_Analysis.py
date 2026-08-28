@@ -134,7 +134,7 @@ class Random_Forest_Analysis:
     
     def tune_hyperparams(self, test_size = 0.3, val_size = 0.3, 
                          n_seeds = 3, n_iter = 100,
-                         param_grid = None, runtime = True, out = False):
+                         param_grid = None, runtime = True):
         """
         Performs a RandomizedSearchCV using different hyperparameters and random states to find the best
         parameters for building the classifier. Prints the average best results for use. The test_size, val_size
@@ -160,13 +160,11 @@ class Random_Forest_Analysis:
             Dictionary of hyperparameters to try for RandomizedSearchCV. There is a default dict if left as None. The default is None.
         runtime : bool, optional
             Prints runtime length. The default is True.
-        out : bool, optional
-            Returns a dictionary of the best parameters per run. The default is False
 
         Returns
         -------
         Prints the average results for the parameter scores to then be put into the main classifier.
-        If out == True, returns a dictionary of the values for the best parameters for each random state.
+        Returns a dictionary of the values for the best parameters for each random state.
         """
         
 
@@ -296,8 +294,7 @@ class Random_Forest_Analysis:
         print(f"The average success was {np.mean(a[1]/a[2])*100:.3f}%")
         collected, best_vals = summarise_best_params(params_best)
         
-        if out == True:
-            return collected, best_vals
+        return collected, best_vals
             
         
     def classifier_scores(self, CM = True, bal_acc_sco = True, 
